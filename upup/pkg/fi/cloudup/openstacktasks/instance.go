@@ -19,6 +19,7 @@ package openstacktasks
 import (
 	"fmt"
 
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
@@ -181,7 +182,20 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 				Group: *e.ServerGroup.ID,
 			},
 		}
-		v, err := t.Cloud.CreateInstance(sgext)
+
+		bfv := bootfromvolume.CreateOptsExt{
+			CreateOptsBuilder: sgext,
+			BlockDevice: []bootfromvolume.BlockDevice{{
+				BootIndex:           0,
+				DeleteOnTermination: true,
+				DestinationType:     "volume",
+				SourceType:          "image",
+				UUID:                "8066fec7-687f-4d8f-bd81-ada46c3118c4",
+				VolumeSize:          20,
+			}},
+		}
+
+		v, err := t.Cloud.CreateInstance(bfv)
 		if err != nil {
 			return fmt.Errorf("Error creating instance: %v", err)
 		}
