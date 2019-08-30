@@ -196,6 +196,7 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 		}
 
 		v, err := t.Cloud.CreateInstance(opts)
+
 		if err != nil {
 			return fmt.Errorf("Error creating instance: %v", err)
 		}
