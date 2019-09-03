@@ -70,6 +70,7 @@ func (b *ServerGroupModelBuilder) buildInstances(c *fi.ModelBuilderContext, sg *
 
 	if v, ok := ig.ObjectMeta.Annotations[openstack.OS_ANNOTATION+openstack.BOOT_VOLUME_SIZE]; ok {
 		igMeta[openstack.BOOT_VOLUME_SIZE] = v
+
 	}
 
 	startupScript, err := b.BootstrapScript.ResourceNodeUp(ig, b.Cluster)
