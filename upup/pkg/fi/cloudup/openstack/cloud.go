@@ -23,6 +23,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
+
 	"k8s.io/kops/pkg/dns"
 
 	"github.com/gophercloud/gophercloud"
@@ -274,6 +276,8 @@ type OpenstackCloud interface {
 
 	GetFloatingIP(id string) (fip *floatingips.FloatingIP, err error)
 
+	GetImage(name string) (i *images.Image, err error)
+
 	AssociateFloatingIPToInstance(serverID string, opts floatingips.AssociateOpts) (err error)
 
 	ListServerFloatingIPs(id string) ([]*string, error)
@@ -292,6 +296,7 @@ type openstackCloud struct {
 	novaClient      *gophercloud.ServiceClient
 	dnsClient       *gophercloud.ServiceClient
 	lbClient        *gophercloud.ServiceClient
+	glanceClient    *gophercloud.ServiceClient
 	floatingEnabled bool
 	extNetworkName  *string
 	extSubnetName   *string
@@ -364,6 +369,12 @@ func NewOpenstackCloud(tags map[string]string, spec *kops.ClusterSpec) (Openstac
 		Type:   "compute",
 		Region: region,
 	})
+
+	glanceClient, err := os.NewImageServiceV2(provider, gophercloud.EndpointOpts{
+		Type:   "image",
+		Region: region,
+	})
+
 	if err != nil {
 		return nil, fmt.Errorf("error building nova client: %v", err)
 	}
@@ -387,6 +398,7 @@ func NewOpenstackCloud(tags map[string]string, spec *kops.ClusterSpec) (Openstac
 		neutronClient: neutronClient,
 		novaClient:    novaClient,
 		dnsClient:     dnsClient,
+		glanceClient:  glanceClient,
 		tags:          tags,
 		region:        region,
 		useOctavia:    false,

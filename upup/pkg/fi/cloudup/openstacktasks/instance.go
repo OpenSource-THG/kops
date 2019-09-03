@@ -43,11 +43,17 @@ type Instance struct {
 	UserData         *string
 	Metadata         map[string]string
 	AvailabilityZone *string
+	OsVolumeBoot     *OsVolumeBoot
 
 	Lifecycle *fi.Lifecycle
 }
 
 var _ fi.HasAddress = &Instance{}
+
+type OsVolumeBoot struct {
+	Enabled    bool
+	VolumeSize *int
+}
 
 // GetDependencies returns the dependencies of the Instance task
 func (e *Instance) GetDependencies(tasks map[string]fi.Task) []fi.Task {
@@ -183,16 +189,23 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 			},
 		}
 
-		bfv := bootfromvolume.CreateOptsExt{
-			CreateOptsBuilder: sgext,
-			BlockDevice: []bootfromvolume.BlockDevice{{
-				BootIndex:           0,
-				DeleteOnTermination: true,
-				DestinationType:     "volume",
-				SourceType:          "image",
-				UUID:                "8066fec7-687f-4d8f-bd81-ada46c3118c4",
-				VolumeSize:          20,
-			}},
+		if e.OsVolumeBoot.Enabled {
+			i, err := t.Cloud.GetImage(fi.StringValue(e.Image))
+			if err != nil {
+				return fmt.Errorf("Error getting image information: %v", err)
+			}
+
+			bfv := bootfromvolume.CreateOptsExt{
+				CreateOptsBuilder: sgext,
+				BlockDevice: []bootfromvolume.BlockDevice{{
+					BootIndex:           0,
+					DeleteOnTermination: true,
+					DestinationType:     "volume",
+					SourceType:          "image",
+					UUID:                i.ID,
+					VolumeSize:          i.MinDiskGigabytes,
+				}},
+			}
 		}
 
 		v, err := t.Cloud.CreateInstance(bfv)
