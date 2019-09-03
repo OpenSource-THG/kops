@@ -23,6 +23,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
+
+	"k8s.io/kops/pkg/dns"
+
 	"github.com/gophercloud/gophercloud"
 	os "github.com/gophercloud/gophercloud/openstack"
 	cinder "github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
@@ -367,6 +371,12 @@ func NewOpenstackCloud(tags map[string]string, spec *kops.ClusterSpec) (Openstac
 		Type:   "compute",
 		Region: region,
 	})
+
+	glanceClient, err := os.NewImageServiceV2(provider, gophercloud.EndpointOpts{
+		Type:   "image",
+		Region: region,
+	})
+
 	if err != nil {
 		return nil, fmt.Errorf("error building nova client: %v", err)
 	}
