@@ -18,6 +18,7 @@ package openstacktasks
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
@@ -169,7 +170,7 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 			},
 		}
 
-		if e.OsVolumeBoot.Enabled {
+		if bootFromVolume(e.Metadata) {
 			i, err := t.Cloud.GetImage(fi.StringValue(e.Image))
 			if err != nil {
 				return fmt.Errorf("Error getting image information: %v", err)
@@ -185,6 +186,14 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 					UUID:                i.ID,
 					VolumeSize:          i.MinDiskGigabytes,
 				}},
+			}
+
+			if s, ok := e.Metadata["openstack.kops.io/osVolumeSize"]; ok {
+				i, err := strconv.ParseInt(s, 10, 64)
+				if err == nil {
+					return fmt.Errorf("Invalid value for openstack.kops.io/osVolumeSize: %v", err)
+				}
+				bfv.BlockDevice[0].VolumeSize = i
 			}
 		}
 
@@ -202,4 +211,18 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 
 	klog.V(2).Infof("Openstack task Instance::RenderOpenstack did nothing")
 	return nil
+}
+
+func bootFromVolume(m map[string]string) bool {
+	v, ok := m["openstack.kops.io/osVolumeBoot"]
+	if ok {
+		return false
+	}
+
+	switch v {
+	case "true", "enabled":
+		return true
+	default:
+		return false
+	}
 }
