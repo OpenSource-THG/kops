@@ -151,6 +151,8 @@ type InstanceGroupSpec struct {
 	SecurityGroupOverride *string `json:"securityGroupOverride,omitempty"`
 	// InstanceProtection makes new instances in an autoscaling group protected from scale in
 	InstanceProtection *bool `json:"instanceProtection,omitempty"`
+	//  OsVolumeBoot boots the instances from a volume in openstack.
+	OsVolumeBoot *OsVolumeBootSpec `json:"instanceProtection,omitempty"`
 }
 
 const (
@@ -305,4 +307,12 @@ type LoadBalancer struct {
 	LoadBalancerName *string `json:"loadBalancerName,omitempty"`
 	// TargetGroupARN to associate with this instance group (AWS ALB/NLB)
 	TargetGroupARN *string `json:"targetGroupArn,omitempty"`
+}
+
+// VolumeSpec defined the spec for an additional volume attached to the instance group
+type OsVolumeBootSpec struct {
+	// Device is an optional device name of the block device
+	Enabled bool `json:"enabled"`
+	// Device is an optional device name of the block device
+	VolumeSize *int `json:"volumeSize,omitempty"`
 }
