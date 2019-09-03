@@ -193,11 +193,9 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 		opts, err := includeBootVolumeOptions(t, e, sgext)
 		if err != nil {
 			return err
-
 		}
 
 		v, err := t.Cloud.CreateInstance(opts)
-
 		if err != nil {
 			return fmt.Errorf("Error creating instance: %v", err)
 		}
