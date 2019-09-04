@@ -23,10 +23,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
-
-	"k8s.io/kops/pkg/dns"
-
 	"github.com/gophercloud/gophercloud"
 	os "github.com/gophercloud/gophercloud/openstack"
 	cinder "github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
