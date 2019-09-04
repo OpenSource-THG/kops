@@ -210,9 +210,9 @@ func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts
 			}},
 		}
 
-		if s, ok := e.Metadata["openstack.kops.io/osVolumeSize"]; ok {
+		if s, ok := e.Metadata[openstack.BOOT_VOLUME_SIZE]; ok {
 			i, err := strconv.ParseInt(s, 10, 64)
-			if err == nil {
+			if err != nil {
 				return nil, fmt.Errorf("Invalid value for openstack.kops.io/osVolumeSize: %v", err)
 			}
 			bfv.BlockDevice[0].VolumeSize = int(i)
@@ -225,8 +225,8 @@ func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts
 }
 
 func bootFromVolume(m map[string]string) bool {
-	v, ok := m["openstack.kops.io/osVolumeBoot"]
-	if ok {
+	v, ok := m[openstack.BOOT_FROM_VOLUME]
+	if !ok {
 		return false
 	}
 

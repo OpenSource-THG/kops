@@ -64,12 +64,12 @@ func (b *ServerGroupModelBuilder) buildInstances(c *fi.ModelBuilderContext, sg *
 	igMeta[openstack.INSTANCE_GROUP_GENERATION] = fmt.Sprintf("%d", ig.GetGeneration())
 	igMeta[openstack.CLUSTER_GENERATION] = fmt.Sprintf("%d", b.Cluster.GetGeneration())
 
-	if e, ok := ig.ObjectMeta.Annotations["openstack.kops.io/osVolumeBoot"]; ok {
-		igMeta["openstack.kops.io/osVolumeBoot"] = e
+	if e, ok := ig.ObjectMeta.Annotations[openstack.IG_ANNOTATION+openstack.BOOT_FROM_VOLUME]; ok {
+		igMeta[openstack.BOOT_FROM_VOLUME] = e
 	}
 
-	if v, ok := ig.ObjectMeta.Annotations["openstack.kops.io/osVolumeSize"]; ok {
-		igMeta["openstack.kops.io/osVolumeSize"] = v
+	if v, ok := ig.ObjectMeta.Annotations[openstack.IG_ANNOTATION+openstack.BOOT_VOLUME_SIZE]; ok {
+		igMeta[openstack.BOOT_VOLUME_SIZE] = v
 	}
 
 	startupScript, err := b.BootstrapScript.ResourceNodeUp(ig, b.Cluster)
