@@ -192,7 +192,7 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 }
 
 func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts servers.CreateOptsBuilder) (servers.CreateOptsBuilder, error) {
-	if bootFromVolume(e.Metadata) {
+	if !bootFromVolume(e.Metadata) {
 		return opts, nil
 	}
 
