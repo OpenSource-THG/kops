@@ -367,14 +367,16 @@ func NewOpenstackCloud(tags map[string]string, spec *kops.ClusterSpec) (Openstac
 		Type:   "compute",
 		Region: region,
 	})
+	if err != nil {
+		return nil, fmt.Errorf("error building nova client: %v", err)
+	}
 
 	glanceClient, err := os.NewImageServiceV2(provider, gophercloud.EndpointOpts{
 		Type:   "image",
 		Region: region,
 	})
-
 	if err != nil {
-		return nil, fmt.Errorf("error building nova client: %v", err)
+		return nil, fmt.Errorf("error building glance client: %v", err)
 	}
 
 	glanceClient, err := os.NewImageServiceV2(provider, gophercloud.EndpointOpts{
