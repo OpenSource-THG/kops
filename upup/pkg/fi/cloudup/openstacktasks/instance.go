@@ -236,7 +236,7 @@ func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts
 	if s, ok := e.Metadata[openstack.BOOT_VOLUME_SIZE]; ok {
 		i, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf("Invalid value for %v: %v", openstack.BOOT_VOLUME_SIZE, err)
+			return nil, fmt.Errorf("Invalid value for  %v: %v", openstack.BOOT_VOLUME_SIZE, err)
 		}
 
 		bfv.BlockDevice[0].VolumeSize = int(i)
