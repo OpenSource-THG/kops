@@ -64,11 +64,11 @@ func (b *ServerGroupModelBuilder) buildInstances(c *fi.ModelBuilderContext, sg *
 	igMeta[openstack.INSTANCE_GROUP_GENERATION] = fmt.Sprintf("%d", ig.GetGeneration())
 	igMeta[openstack.CLUSTER_GENERATION] = fmt.Sprintf("%d", b.Cluster.GetGeneration())
 
-	if e, ok := ig.ObjectMeta.Annotations[openstack.IG_ANNOTATION+openstack.BOOT_FROM_VOLUME]; ok {
+	if e, ok := ig.ObjectMeta.Annotations[openstack.OS_ANNOTATION+openstack.BOOT_FROM_VOLUME]; ok {
 		igMeta[openstack.BOOT_FROM_VOLUME] = e
 	}
 
-	if v, ok := ig.ObjectMeta.Annotations[openstack.IG_ANNOTATION+openstack.BOOT_VOLUME_SIZE]; ok {
+	if v, ok := ig.ObjectMeta.Annotations[openstack.OS_ANNOTATION+openstack.BOOT_VOLUME_SIZE]; ok {
 		igMeta[openstack.BOOT_VOLUME_SIZE] = v
 	}
 

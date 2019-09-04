@@ -213,35 +213,35 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 
 func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts servers.CreateOptsBuilder) (servers.CreateOptsBuilder, error) {
 	if bootFromVolume(e.Metadata) {
-		i, err := t.Cloud.GetImage(fi.StringValue(e.Image))
-		if err != nil {
-			return nil, fmt.Errorf("Error getting image information: %v", err)
-		}
-
-		bfv := bootfromvolume.CreateOptsExt{
-			CreateOptsBuilder: opts,
-			BlockDevice: []bootfromvolume.BlockDevice{{
-				BootIndex:           0,
-				DeleteOnTermination: true,
-				DestinationType:     "volume",
-				SourceType:          "image",
-				UUID:                i.ID,
-				VolumeSize:          i.MinDiskGigabytes,
-			}},
-		}
-
-		if s, ok := e.Metadata[openstack.BOOT_VOLUME_SIZE]; ok {
-			i, err := strconv.ParseInt(s, 10, 64)
-			if err != nil {
-				return nil, fmt.Errorf("Invalid value for %v: %v", openstack.BOOT_VOLUME_SIZE, err)
-			}
-			bfv.BlockDevice[0].VolumeSize = int(i)
-		}
-
-		return bfv, nil
+		return opts, nil
 	}
 
-	return opts, nil
+	i, err := t.Cloud.GetImage(fi.StringValue(e.Image))
+	if err != nil {
+		return nil, fmt.Errorf("Error getting image information: %v", err)
+	}
+
+	bfv := bootfromvolume.CreateOptsExt{
+		CreateOptsBuilder: opts,
+		BlockDevice: []bootfromvolume.BlockDevice{{
+			BootIndex:           0,
+			DeleteOnTermination: true,
+			DestinationType:     "volume",
+			SourceType:          "image",
+			UUID:                i.ID,
+			VolumeSize:          i.MinDiskGigabytes,
+		}},
+	}
+
+	if s, ok := e.Metadata[openstack.BOOT_VOLUME_SIZE]; ok {
+		i, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("Invalid value for %v: %v", openstack.BOOT_VOLUME_SIZE, err)
+		}
+		bfv.BlockDevice[0].VolumeSize = int(i)
+	}
+
+	return bfv, nil
 }
 
 func bootFromVolume(m map[string]string) bool {
