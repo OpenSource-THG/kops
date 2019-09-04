@@ -32,7 +32,7 @@ import (
 const (
 	INSTANCE_GROUP_GENERATION = "ig_generation"
 	CLUSTER_GENERATION        = "cluster_generation"
-	IG_ANNOTATION             = "openstack.kops.io/"
+	OS_ANNOTATION             = "openstack.kops.io/"
 	BOOT_FROM_VOLUME          = "osVolumeBoot"
 	BOOT_VOLUME_SIZE          = "osVolumeSize"
 )
