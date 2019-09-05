@@ -214,9 +214,9 @@ func includeBootVolumeOptions(t *openstack.OpenstackAPITarget, e *Instance, opts
 	}
 
 	if s, ok := e.Metadata[openstack.BOOT_VOLUME_SIZE]; ok {
-		i, err := strconv.ParseInt(s, 10, 64)
+		i, err := parseQuantityString(s)
 		if err != nil {
-			return nil, fmt.Errorf("Invalid value for %v: %v", openstack.BOOT_VOLUME_SIZE, err)
+			return nil, err
 		}
 		bfv.BlockDevice[0].VolumeSize = int(i)
 	}
@@ -236,4 +236,30 @@ func bootFromVolume(m map[string]string) bool {
 	default:
 		return false
 	}
+}
+
+func parseQuantityString(s string) (int, error) {
+	end := len(s)
+	suffix := s[end-1:]
+	val := ""
+
+	switch suffix {
+	case "g", "t":
+		val = s[:end-1]
+	case "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
+		val = s
+	default:
+		return 0, fmt.Errorf("Unsupported suffix for %v: %v", openstack.BOOT_VOLUME_SIZE, s)
+	}
+
+	i, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return 0, fmt.Errorf("Invalid value for %v: %v", openstack.BOOT_VOLUME_SIZE, err)
+	}
+
+	if suffix == "t" {
+		i = i * 1000
+	}
+
+	return int(i), nil
 }
