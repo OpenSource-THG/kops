@@ -379,14 +379,6 @@ func NewOpenstackCloud(tags map[string]string, spec *kops.ClusterSpec) (Openstac
 		return nil, fmt.Errorf("error building glance client: %v", err)
 	}
 
-	glanceClient, err := os.NewImageServiceV2(provider, gophercloud.EndpointOpts{
-		Type:   "image",
-		Region: region,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error building glance client: %v", err)
-	}
-
 	var dnsClient *gophercloud.ServiceClient
 	if !dns.IsGossipHostname(tags[TagClusterName]) {
 		//TODO: This should be replaced with the environment variable methods as done above
